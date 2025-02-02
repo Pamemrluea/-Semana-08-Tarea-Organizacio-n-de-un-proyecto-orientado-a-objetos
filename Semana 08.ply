@@ -1,0 +1,77 @@
+#UNIVERSIDAD ESTATAL AMAZÓNICA 
+#SEMANA 8
+#NOMBRE PAMELA MORALES
+import os
+
+def mostrar_codigo(ruta_script):
+    """Muestra el contenido de un script Python."""
+    try:
+        with open(ruta_script, 'r', encoding='utf-8') as archivo:
+            codigo = archivo.read()
+            print(f"\n--- Código de {ruta_script} ---\n")
+            print(codigo)
+            return codigo
+    except FileNotFoundError:
+        print("El archivo no se encontró.")
+        return None
+    except Exception as e:
+        print(f"Ocurrió un error al leer el archivo: {e}")
+        return None
+
+def ejecutar_codigo(ruta_script):
+    """Ejecuta un script Python de forma compatible en cualquier entorno."""
+    try:
+        os.system(f'python "{ruta_script}"')  # Ejecuta en Windows y Linux
+    except Exception as e:
+        print(f"Ocurrió un error al ejecutar el código: {e}")
+
+def buscar_scripts(ruta_base, palabra_clave):
+    """Busca scripts en todas las subcarpetas con una palabra clave."""
+    resultados = []
+    for raiz, _, archivos in os.walk(ruta_base):
+        for archivo in archivos:
+            if archivo.endswith('.py') and palabra_clave.lower() in archivo.lower():
+                resultados.append(os.path.join(raiz, archivo))
+
+    if resultados:
+        print("\nResultados de la búsqueda:")
+        for i, script in enumerate(resultados, start=1):
+            print(f"{i} - {script}")
+
+        try:
+            eleccion = int(input("\nElige un script para ver su código (0 para cancelar): ")) - 1
+            if 0 <= eleccion < len(resultados):
+                ruta_script = resultados[eleccion]
+                codigo = mostrar_codigo(ruta_script)
+                if codigo:
+                    ejecutar = input("¿Desea ejecutar el script? (1: Sí, 0: No): ")
+                    if ejecutar == '1':
+                        ejecutar_codigo(ruta_script)
+            else:
+                print("Selección inválida.")
+        except ValueError:
+            print("Entrada no válida.")
+    else:
+        print("No se encontraron scripts con esa palabra clave.")
+
+def mostrar_menu():
+    """Muestra el menú principal."""
+    ruta_base = os.getcwd()  # Usa la carpeta actual como base
+
+    while True:
+        print("\nMenú Principal - Dashboard")
+        print("1 - Buscar un script")
+        print("0 - Salir")
+
+        eleccion = input("Elige una opción: ")
+        if eleccion == '0':
+            print("Saliendo del programa.")
+            break
+        elif eleccion == '1':
+            palabra_clave = input("Ingresa una palabra clave para buscar: ")
+            buscar_scripts(ruta_base, palabra_clave)
+        else:
+            print("Opción no válida. Intenta de nuevo.")
+
+# Ejecutar el menú
+mostrar_menu()
